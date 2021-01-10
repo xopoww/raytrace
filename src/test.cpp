@@ -3,17 +3,24 @@
 
 #include <iostream>
 
-#define WIDTH 400
-#define HEIGHT 300
+#define WIDTH 200
+#define HEIGHT 150
 
 int main()
 {
     Scene scene;
 
-    Camera camera;
+    scene.add_body({
+        std::make_shared<Sphere>(50.l, Vector3{0.l, 0.l, -200.l}),
+        {{0xFF, 0, 0}}
+    });
 
-    camera.eye = Ray{{}, {0.l, 0.l, -1.l}};
-    camera.up = Vector3{0.l, 1.l, 0.l};
+    Camera camera{
+        {{}, {0.l, 0.l, -1.l}},
+        {0.l, 1.l, 0.l},
+        {HEIGHT, WIDTH},
+        1.6l
+    };
 
     auto img = camera.render(scene);
 

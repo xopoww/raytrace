@@ -3,17 +3,23 @@
 #include "linalg/vector.hpp"
 #include "linalg/ray.hpp"
 #include "imagery/image.hpp"
+#include "body.hpp"
 
+#include <vector>
 
 class Scene
 {
     Vector3 light;
+
+    std::vector<Body> bodies;
 
 public:
 
     Scene();
 
     Scene(const Vector3 &_light);
+
+    void add_body(const Body &body);
 
     friend struct Camera;
 };

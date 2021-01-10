@@ -33,6 +33,11 @@ Scene::Scene(const Vector3 &_light): light(_light)
 {
 }
 
+void Scene::add_body(const Body &body)
+{
+    this->bodies.emplace_back(body);
+}
+
 RGBImage Camera::render(const Scene &scene) const
 {
     RGBImage img(this->width, this->height, RGBPixel());
@@ -62,6 +67,41 @@ const coord_t max_render_distance = 1000.l;
 
 RGBPixel Camera::trace(const Ray &ray, const Scene &scene) const
 {
+    std::vector<Ray> intersects;
+
+    for (std::size_t i = 0; i < scene.bodies.size(); i++)
+    {
+        if (scene.bodies[i].obj->is_in(this->eye.origin))
+        {
+            intersects.emplace_back(inf_vector, Vector3{});
+        }
+
+        intersects.push_back(scene.bodies[i].obj->intersect(ray).first);
+    }
+
+    coord_t min_dist = infinity;
+    int body_index = -1;
+
+    for (std::size_t i = 0; i < scene.bodies.size(); i++)
+    {
+        if (std::isnan(intersects[i].origin.x) || std::isinf(intersects[i].origin.x))
+        {
+            continue;
+        }
+        coord_t dist = (intersects[i].origin - this->eye.origin).length();
+        if (dist < min_dist)
+        {
+            min_dist = dist;
+            body_index = i;
+        }
+    }
+
+    if (body_index != -1)
+    {
+        return scene.bodies[body_index].material.color;
+    }
+
+
     long double cos_phi =
         ray.direction.norm().dot((scene.light - this->eye.origin).norm());
 
