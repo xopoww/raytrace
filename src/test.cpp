@@ -19,14 +19,25 @@ int main()
         {{}, {0.l, 0.l, -1.l}},
         {0.l, 1.l, 0.l},
         {HEIGHT, WIDTH},
-        1.6l
+        1.6l,
+        0
     };
 
-    auto img = camera.render(scene);
+    auto img1 = camera.render(scene);
+    
+    camera.anti_aliasing = 4;
+
+    auto img2 = camera.render(scene);
+
+    camera.anti_aliasing = 10;
+
+    auto img3 = camera.render(scene);
 
     std::cout << "Render finished" << std::endl;
 
-    PPMBackend().output(img, "test.ppm");
+    PPMBackend().output(img1, "test1.ppm");
+    PPMBackend().output(img2, "test2.ppm");
+    PPMBackend().output(img3, "test3.ppm");
 
     std::cout << "Done." << std::endl;
 }

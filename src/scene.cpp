@@ -1,5 +1,7 @@
 #include "scene.hpp"
 
+#include "linalg/random.hpp"
+
 #include <cmath>
 
 const coord_t pixel_size = 1.l;
@@ -13,10 +15,12 @@ Camera::Camera():
 
 Camera::Camera(
     const Ray &_eye, const Vector3 &_up,
-    std::pair<std::size_t, std::size_t> _shape, const long double _FOV
+    std::pair<std::size_t, std::size_t> _shape, const long double _FOV,
+    const std::size_t _anti_aliasing
 ):
     eye(_eye.origin, _eye.direction.norm()),
-    up(_up.norm()), width(_shape.second), height(_shape.first), FOV(_FOV)
+    up(_up.norm()), width(_shape.second), height(_shape.first), FOV(_FOV),
+    anti_aliasing(_anti_aliasing)
 {}
 
 Vector3 Camera::vec_to_screen() const
@@ -48,15 +52,47 @@ RGBImage Camera::render(const Scene &scene) const
     {
         for (std::size_t y = 0; y < this->height; y++)
         {
-            coord_t off_x = x - ((coord_t)this->width - pixel_size) / 2;
-            coord_t off_y = y - ((coord_t)this->height - pixel_size) / 2;
+            coord_t base_off_x = x - (coord_t)this->width / 2;
+            coord_t base_off_y = y - (coord_t)this->height / 2;
 
-            Vector3 direction = this->vec_to_screen()
+            std::vector<RGBPixel> samples;
+            samples.reserve(this->anti_aliasing);
+
+            auto add_sample =
+                [&samples, base_off_x, base_off_y, right, this, scene]
+                (const coord_t sub_off_x, const coord_t sub_off_y)
+            {
+                coord_t off_x = base_off_x + sub_off_x * pixel_size;
+                coord_t off_y = base_off_y + sub_off_y * pixel_size;
+
+                Vector3 direction = this->vec_to_screen()
                 + right * off_x - this->up * off_y;
 
-            Ray ray(this->eye.origin, direction);
+                Ray ray(this->eye.origin, direction);
 
-            img(y, x) = this->trace(ray, scene);
+                samples.push_back(this->trace(ray, scene));
+            };
+
+            std::vector<float> weights;
+
+            if (this->anti_aliasing == 0)
+            {
+                add_sample(0.5l, 0.5l);
+
+                weights.push_back(1.f);
+            }
+            else
+            {
+                for (std::size_t i = 0; i < this->anti_aliasing; i++)
+                {
+                    add_sample(random_frac(), random_frac());
+                }
+
+                weights = std::vector<float>(
+                    this->anti_aliasing, 1.f / this->anti_aliasing);
+            }
+
+            img(y, x) = combine(samples, weights);
         }
     }
 

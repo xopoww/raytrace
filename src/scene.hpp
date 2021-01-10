@@ -35,11 +35,14 @@ struct Camera
 
     long double FOV;
 
+    std::size_t anti_aliasing;
+
     Camera();
 
     Camera(
         const Ray &_eye, const Vector3 &_up,
-        std::pair<std::size_t, std::size_t> _shape, const long double _FOV);
+        std::pair<std::size_t, std::size_t> _shape, const long double _FOV,
+        const std::size_t _anti_aliasing);
 
     RGBImage render(const Scene &scene) const;
 
