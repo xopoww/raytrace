@@ -32,7 +32,7 @@ std::pair<coord_t, coord_t> solve_quadratic(
     coord_t D = std::sqrt(D2);
 
     return {
-        -b + D / 2 / a,
-        -b - D / 2 / a
+        (-b - D) / 2 / a,
+        (-b + D) / 2 / a
     };
 }

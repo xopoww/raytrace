@@ -11,8 +11,13 @@ int main()
     Scene scene;
 
     scene.add_body({
-        std::make_shared<Sphere>(50.l, Vector3{0.l, 0.l, -200.l}),
-        {{0xFF, 0, 0}}
+        std::make_shared<Sphere>(50.l, Vector3{60.l, 0.l, -80.l}),
+        std::make_shared<MirrorMaterial>(RGBPixel{0xFF, 0, 0})
+    });
+
+    scene.add_body({
+        std::make_shared<Sphere>(50.l, Vector3{-60.l, 0.l, -80.l}),
+        std::make_shared<MirrorMaterial>(RGBPixel{0xFF, 0xFF, 0xFF})
     });
 
     Camera camera{
@@ -20,24 +25,14 @@ int main()
         {0.l, 1.l, 0.l},
         {HEIGHT, WIDTH},
         1.6l,
-        0
+        10
     };
 
-    auto img1 = camera.render(scene);
-    
-    camera.anti_aliasing = 4;
-
-    auto img2 = camera.render(scene);
-
-    camera.anti_aliasing = 10;
-
-    auto img3 = camera.render(scene);
+    auto img = camera.render(scene);
 
     std::cout << "Render finished" << std::endl;
 
-    PPMBackend().output(img1, "test1.ppm");
-    PPMBackend().output(img2, "test2.ppm");
-    PPMBackend().output(img3, "test3.ppm");
+    PPMBackend().output(img, "test.ppm");
 
     std::cout << "Done." << std::endl;
 }

@@ -50,5 +50,9 @@ private:
 
     Vector3 vec_to_screen() const;
 
-    RGBPixel trace(const Ray &ray, const Scene &scene) const;
+    std::pair<int, Ray> find_collision(
+        const Ray &ray, const Scene &scene) const;
+
+    RGBPixel trace(
+        const Ray &ray, const Scene &scene, const std::size_t depth = 0) const;
 };

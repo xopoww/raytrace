@@ -65,7 +65,7 @@ Vector3 Vector3::cross(const Vector3 &other) const
 
 Vector3 Vector3::project(const Vector3 &direction) const
 {
-    return direction * (this->dot(direction) / direction.length());
+    return direction * (std::abs(this->dot(direction)) / direction.length());
 }
 
 coord_t & Vector3::operator[](const std::size_t i)

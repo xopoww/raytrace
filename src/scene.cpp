@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <iostream>
+
 const coord_t pixel_size = 1.l;
 
 
@@ -31,7 +33,7 @@ Vector3 Camera::vec_to_screen() const
 }
 
 
-Scene::Scene(): light(0.l, 100.l, 0.l) {}
+Scene::Scene(): light(0.l, 200.l, 0.l) {}
 
 Scene::Scene(const Vector3 &_light): light(_light)
 {
@@ -100,19 +102,38 @@ RGBImage Camera::render(const Scene &scene) const
 }
 
 const coord_t max_render_distance = 1000.l;
+const std::size_t max_recursion_depth = 40;
 
-RGBPixel Camera::trace(const Ray &ray, const Scene &scene) const
+
+// TODO: possibly incapsulate this function into Material class
+RGBPixel combine_colors(const RGBPixel &color, const RGBPixel &light)
 {
+
+    RGBPixel result;
+    result.R = (float)color.R * (float)light.R / RGBPixel::max_brightness;
+    result.G = (float)color.G * (float)light.G / RGBPixel::max_brightness;
+    result.B = (float)color.B * (float)light.B / RGBPixel::max_brightness;
+    return result;
+}
+
+
+std::pair<int, Ray> Camera::find_collision(
+    const Ray &ray, const Scene &scene) const
+{
+    Ray inf_ray{inf_vector, Vector3{}};
+
     std::vector<Ray> intersects;
 
     for (std::size_t i = 0; i < scene.bodies.size(); i++)
     {
-        if (scene.bodies[i].obj->is_in(this->eye.origin))
+        if (scene.bodies[i].obj->is_in(ray.origin))
         {
-            intersects.emplace_back(inf_vector, Vector3{});
+            intersects.emplace_back(inf_ray);
         }
-
-        intersects.push_back(scene.bodies[i].obj->intersect(ray).first);
+        else
+        {
+           intersects.push_back(scene.bodies[i].obj->intersect(ray).first);
+        }
     }
 
     coord_t min_dist = infinity;
@@ -120,11 +141,14 @@ RGBPixel Camera::trace(const Ray &ray, const Scene &scene) const
 
     for (std::size_t i = 0; i < scene.bodies.size(); i++)
     {
-        if (std::isnan(intersects[i].origin.x) || std::isinf(intersects[i].origin.x))
+        if (
+            std::isnan(intersects[i].origin.x) ||
+            std::isinf(intersects[i].origin.x)
+        )
         {
             continue;
         }
-        coord_t dist = (intersects[i].origin - this->eye.origin).length();
+        coord_t dist = (intersects[i].origin - ray.origin).length();
         if (dist < min_dist)
         {
             min_dist = dist;
@@ -132,16 +156,68 @@ RGBPixel Camera::trace(const Ray &ray, const Scene &scene) const
         }
     }
 
+    return {
+        body_index,
+        body_index == -1 ? inf_ray : intersects[body_index]
+    };
+}
+
+RGBPixel Camera::trace(
+    const Ray &ray, const Scene &scene, const std::size_t depth) const
+{
+    auto coll_rec = this->find_collision(ray, scene);
+    int body_index = coll_rec.first;
+    Ray intersection = coll_rec.second;
+
     if (body_index != -1)
     {
-        return scene.bodies[body_index].material.color;
+        // the ray collided with the body
+
+        const Body &body = scene.bodies[body_index];
+
+        // if (depth != 0)
+        // {
+        //     std::cout << ".";
+        // }
+
+        RGBPixel light_color;
+
+        if (depth == max_recursion_depth)
+        {
+            // find out if the light source is blocked
+            // if it is - light color is black, if it is not - white
+            
+            Ray to_light{intersection.origin, scene.light - intersection.origin};
+
+            bool blocked = (
+                // blocked by itself
+                to_light.direction.dot(intersection.direction) < 0 ||
+                // blocked by another body
+                this->find_collision(to_light, scene).first != -1
+            );
+
+            light_color = RGBPixel{blocked ? 0u : 0xFFu};
+        }
+        else
+        {
+            // determine the light color by recursively tracing reflected ray
+
+            Vector3 reflected =
+                body.material->reflect(ray.direction, intersection.direction);
+        
+            light_color = this->trace(
+                {intersection.origin, reflected}, scene, depth + 1
+            );
+        }
+        
+        return combine_colors(body.material->color, light_color);
     }
 
 
     long double cos_phi =
-        ray.direction.norm().dot((scene.light - this->eye.origin).norm());
+        ray.direction.dot((scene.light - ray.origin).norm());
 
-    long double lum = std::pow((cos_phi + 1.l) / 2.l, 4);
+    long double lum = std::pow((cos_phi + 1.l) / 2.l, 1.5);
 
     RGBPixel::pixel_t brightness = RGBPixel::max_brightness * lum;
 

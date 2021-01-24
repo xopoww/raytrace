@@ -63,14 +63,14 @@ public:
 class Body
 {
     std::shared_ptr<Object> obj;
-    Material material;
+    std::shared_ptr<Material> material;
 
 public:
 
     Body() = delete;
     Body(const Body &) = default;
 
-    Body(std::shared_ptr<Object> _obj, const Material &_material);
+    Body(std::shared_ptr<Object> _obj, std::shared_ptr<Material> _material);
 
     friend struct Camera;
 };
