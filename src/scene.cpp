@@ -132,7 +132,12 @@ std::pair<int, Ray> Camera::find_collision(
         }
         else
         {
-           intersects.push_back(scene.bodies[i].obj->intersect(ray).first);
+            Ray intersect = scene.bodies[i].obj->intersect(ray).first;
+            intersects.push_back(
+                (intersect.origin - ray.origin).dot(ray.direction) > 0 ?
+                intersect :
+                inf_ray
+            );
         }
     }
 
@@ -174,11 +179,6 @@ RGBPixel Camera::trace(
         // the ray collided with the body
 
         const Body &body = scene.bodies[body_index];
-
-        // if (depth != 0)
-        // {
-        //     std::cout << ".";
-        // }
 
         RGBPixel light_color;
 
