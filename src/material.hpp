@@ -20,8 +20,9 @@ struct Material
 
 struct MirrorMaterial : public Material
 {
+    float noise_coef;
 
-    MirrorMaterial(const RGBPixel &_color);
+    MirrorMaterial(const RGBPixel &_color, const float _noise);
 
     Vector3 reflect(
         const Vector3 &direction, const Vector3 &normal) const override;
