@@ -11,6 +11,7 @@ struct RGBPixel
 {
     using pixel_t = uint16_t;
     static const pixel_t max_brightness = 0xFF;
+    static const std::size_t bit_depth = 8;
 
     pixel_t R;
     pixel_t G;

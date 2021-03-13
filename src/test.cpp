@@ -1,4 +1,4 @@
-#include "imagery/ppm.hpp"
+#include "imagery/png.hpp"
 #include "scene.hpp"
 
 #include <iostream>
@@ -37,7 +37,7 @@ int main()
 
     std::cout << "Render finished" << std::endl;
 
-    PPMBackend().output(img, "test.ppm");
+    PNGBackend().output(img, "test.png");
 
     std::cout << "Done." << std::endl;
 }

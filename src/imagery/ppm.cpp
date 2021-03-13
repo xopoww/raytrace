@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-void PPMBackend::output(const RGBImage &image, const char * filename)
+bool PPMBackend::output(const RGBImage &image, const char * filename, std::ostream *cerr)
 {
     std::ofstream fout;
     fout.open(filename);
@@ -23,9 +23,10 @@ void PPMBackend::output(const RGBImage &image, const char * filename)
     }
 
     fout.close();
+    return true;
 }
 
-void PPMBackend::output(const RGBImage &image, std::string filename)
+bool PPMBackend::output(const RGBImage &image, std::string filename, std::ostream *cerr)
 {
-    return this->output(image, filename.c_str());
+    return this->output(image, filename.c_str(), cerr);
 }
