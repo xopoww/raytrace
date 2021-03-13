@@ -10,8 +10,15 @@ file(GLOB_RECURSE CPPS "*.cpp")
 add_executable(${PROJECT_NAME} ${CPPS})
 # target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
 
-find_package( PNGwriter 0.7.0 REQUIRED )
+find_package( PNG )
 
-target_link_libraries( ${PROJECT_NAME} PRIVATE PNGwriter::PNGwriter )
+if ( PNG_FOUND )
+    target_link_libraries( ${PROJECT_NAME} PRIVATE ${PNG_LIBRARY} )
+    target_include_directories( ${PROJECT_NAME} PRIVATE ${PNG_INCLUDES} )
+    target_compile_definitions( ${PROJECT_NAME} PRIVATE ${PNG_DEFINITIONS} )
+else()
+    target_compile_definitions( ${PROJECT_NAME} PRIVATE LIBPNG_NOT_FOUND )
+    message( STATUS "libpng not found - png backends will be unavailable")
+endif()
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

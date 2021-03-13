@@ -1,5 +1,7 @@
 #include "png.hpp"
 
+#ifndef LIBPNG_NOT_FOUND
+
 #include <libpng/png.h>
 #include <cstdio>
 
@@ -107,3 +109,5 @@ bool PNGBackend::output(const RGBImage &image, std::string filename, std::ostrea
 {
     return this->output(image, filename.c_str(), cerr);
 }
+
+#endif
