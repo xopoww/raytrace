@@ -4,7 +4,7 @@
 
 #include "color.hpp"
 
-#include "../linalg/matrix.hpp"
+#include "linalg/matrix.hpp"
 
 using RGBImage = BasicMatrix<RGBPixel>;
 
