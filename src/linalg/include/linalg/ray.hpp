@@ -4,7 +4,7 @@
 // (TODO: probably move to vector.hpp)
 //
 
-#include "vector.hpp"
+#include "linalg/vector.hpp"
 
 // Ray (or pinned vector) represents a 3D vector from a fixed point (origin)
 struct Ray

@@ -1,4 +1,4 @@
-#include "ray.hpp"
+#include "linalg/ray.hpp"
 
 Ray::Ray(const Vector3 &_origin, const Vector3 &_direction):
 origin(_origin), direction(_direction.norm())

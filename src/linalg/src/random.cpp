@@ -1,4 +1,4 @@
-#include "random.hpp"
+#include "linalg/random.hpp"
 
 #include <random>
 #include <chrono>

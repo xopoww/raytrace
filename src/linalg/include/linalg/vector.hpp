@@ -5,7 +5,7 @@
 //
 
 
-#include "math.hpp"
+#include "linalg/math.hpp"
 
 #include <cstddef>
 

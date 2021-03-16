@@ -4,7 +4,7 @@
 // Random number generation utilities
 //
 
-#include "math.hpp"
+#include "linalg/math.hpp"
 
 // Generate random integer
 // if _signed is false, the integer will be non-negative
