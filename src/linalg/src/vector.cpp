@@ -68,6 +68,15 @@ Vector3 Vector3::project(const Vector3 &direction) const
     return direction * (std::abs(this->dot(direction)) / direction.length());
 }
 
+bool Vector3::operator==(const Vector3 &other) const
+{
+    return (
+        this->x == other.x &&
+        this->y == other.y &&
+        this->z == other.z
+    );
+}
+
 coord_t & Vector3::operator[](const std::size_t i)
 {
     switch (i)

@@ -43,6 +43,9 @@ struct Vector3
     // (x for 0, y for 1, z for any other value)
     Vector3 rotate(const long double cos, const std::size_t axis) const;
 
+    // Check vectors for equality
+    bool operator==(const Vector3 &other) const;
+
 
     // convenience method; only valid values for i are 0, 1 or 2
     coord_t &operator[](const std::size_t i);

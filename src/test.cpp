@@ -11,19 +11,20 @@ int main()
     Scene scene;
 
     scene.add_body({
-        std::make_shared<Sphere>(50.l, Vector3{60.l, 0.l, -150.l}),
-        std::make_shared<MirrorMaterial>(RGBPixel{0xFF, 0, 0}, 0.6f)
+        std::make_shared<Sphere>(50.l, Vector3{60.l, 0.l, -130.l}),
+        std::make_shared<MirrorMaterial>(RGBPixel{0xA0, 0x80, 0x20}, 0.3f)
     });
 
     scene.add_body({
-        std::make_shared<Sphere>(50.l, Vector3{-60.l, 0.l, -150.l}),
-        std::make_shared<MirrorMaterial>(RGBPixel{0xFF, 0xFF, 0xFF}, 0.f)
+        std::make_shared<Sphere>(50.l, Vector3{-60.l, 0.l, -170.l}),
+        std::make_shared<DiffuseMaterial>(RGBPixel{0x10, 0x40, 0x60}, 0.5f)
     });
 
     scene.add_body({
-        std::make_shared<Sphere>(50.l, Vector3{0.l, 0.l, 200.l}),
-        std::make_shared<MirrorMaterial>(RGBPixel{0, 0, 0xFF}, 0.9f)
+        std::make_shared<Sphere>(1000.l, Vector3{0.l, -1050.l, -150.l}),
+        std::make_shared<DiffuseMaterial>(RGBPixel{0x50, 0x50, 0x50}, 0.5f)
     });
+
 
     Camera camera{
         {{}, {0.l, 0.l, -1.l}},

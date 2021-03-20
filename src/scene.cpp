@@ -102,7 +102,7 @@ RGBImage Camera::render(const Scene &scene) const
 }
 
 const coord_t max_render_distance = 1000.l;
-const std::size_t max_recursion_depth = 40;
+const std::size_t max_recursion_depth = 5;
 
 
 // TODO: possibly incapsulate this function into Material class
@@ -180,34 +180,20 @@ RGBPixel Camera::trace(
 
         const Body &body = scene.bodies[body_index];
 
-        RGBPixel light_color;
+        RGBPixel light_color{0u};
 
-        if (depth == max_recursion_depth)
+        if (depth < max_recursion_depth)
         {
-            // find out if the light source is blocked
-            // if it is - light color is black, if it is not - white
-            
-            Ray to_light{intersection.origin, scene.light - intersection.origin};
+            Ray scattered =
+                body.material->scatter(ray, intersection);
 
-            bool blocked = (
-                // blocked by itself
-                to_light.direction.dot(intersection.direction) < 0 ||
-                // blocked by another body
-                this->find_collision(to_light, scene).first != -1
-            );
 
-            light_color = RGBPixel{blocked ? 0u : 0xFFu};
-        }
-        else
-        {
-            // determine the light color by recursively tracing reflected ray
-
-            Vector3 reflected =
-                body.material->reflect(ray.direction, intersection.direction);
-        
-            light_color = this->trace(
-                {intersection.origin, reflected}, scene, depth + 1
-            );
+            if (scattered.direction.length() > 0.l)
+            {
+                light_color = this->trace(
+                {intersection.origin, scattered.direction}, scene, depth + 1
+                );
+            }     
         }
         
         return combine_colors(body.material->color, light_color);
@@ -217,7 +203,7 @@ RGBPixel Camera::trace(
     long double cos_phi =
         ray.direction.dot((scene.light - ray.origin).norm());
 
-    long double lum = std::pow((cos_phi + 1.l) / 2.l, 1.5);
+    long double lum = std::pow((cos_phi + 1.l) / 2.l, 2.5l);
 
     RGBPixel::pixel_t brightness = RGBPixel::max_brightness * lum;
 
