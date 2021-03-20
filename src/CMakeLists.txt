@@ -31,8 +31,13 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 add_subdirectory("${PROJECT_SOURCE_DIR}/linalg")
 target_link_libraries(${PROJECT_NAME} PUBLIC linalg)
 
-# find_package(OpenMP REQUIRED)
-# target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
+find_package(OpenMP)
+
+if (OpenMP_FOUND)
+    target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE RAYTRACE_USE_OMP)
+    message(STATUS "Found OpenMP which will be used for multicore rendering")
+endif()
 
 find_package( PNG )
 

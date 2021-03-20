@@ -50,6 +50,9 @@ RGBImage Camera::render(const Scene &scene) const
 
     Vector3 right = this->eye.direction.cross(this->up);
 
+    #ifdef RAYTRACE_USE_OMP
+    #pragma omp parallel for schedule(dynamic)
+    #endif
     for (std::size_t x = 0; x < this->width; x++)
     {
         for (std::size_t y = 0; y < this->height; y++)

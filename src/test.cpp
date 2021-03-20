@@ -3,8 +3,8 @@
 
 #include <iostream>
 
-#define WIDTH 200
-#define HEIGHT 100
+#define WIDTH 1920
+#define HEIGHT 1080
 
 int main()
 {
@@ -38,7 +38,7 @@ int main()
 
     std::cout << "Render finished" << std::endl;
 
-    PNGBackend().output(img, "test.png");
+    PNGBackend().output(img, "highres_demo_01.png");
 
     std::cout << "Done." << std::endl;
 }
