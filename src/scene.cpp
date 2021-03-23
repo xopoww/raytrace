@@ -44,8 +44,15 @@ void Scene::add_body(const Body &body)
     this->bodies.emplace_back(body);
 }
 
-RGBImage Camera::render(const Scene &scene) const
+RGBImage Camera::render(const Scene &scene, Progress::callback_t progress_callback) const
 {
+    Progress *progress = nullptr;
+
+    if (progress_callback)
+    {
+        progress = new Progress{this->width, progress_callback};
+    }
+
     RGBImage img(this->width, this->height, RGBPixel());
 
     Vector3 right = this->eye.direction.cross(this->up);
@@ -99,7 +106,13 @@ RGBImage Camera::render(const Scene &scene) const
 
             img(y, x) = combine(samples, weights);
         }
+        if (progress != nullptr)
+        {
+            progress->add(1);
+        }
     }
+
+    delete progress;
 
     return img;
 }

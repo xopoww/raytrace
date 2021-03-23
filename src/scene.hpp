@@ -4,6 +4,7 @@
 #include "linalg/ray.hpp"
 #include "imagery/image.hpp"
 #include "body.hpp"
+#include "progress.hpp"
 
 #include <vector>
 
@@ -44,9 +45,10 @@ struct Camera
         std::pair<std::size_t, std::size_t> _shape, const long double _FOV,
         const std::size_t _anti_aliasing);
 
-    RGBImage render(const Scene &scene) const;
+    RGBImage render(const Scene &scene, Progress::callback_t progress_callback = nullptr) const;
 
 private:
+
 
     Vector3 vec_to_screen() const;
 

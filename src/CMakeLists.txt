@@ -13,6 +13,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     "${PROJECT_SOURCE_DIR}/body.cpp"
     "${PROJECT_SOURCE_DIR}/material.cpp"
     "${PROJECT_SOURCE_DIR}/scene.cpp"
+
+    "${PROJECT_SOURCE_DIR}/progress.cpp"
     
     "${PROJECT_SOURCE_DIR}/imagery/color.cpp"
     "${PROJECT_SOURCE_DIR}/imagery/image.cpp"
